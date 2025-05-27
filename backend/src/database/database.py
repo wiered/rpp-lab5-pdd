@@ -13,12 +13,8 @@ from typing import List
 import psycopg2
 from sqlmodel import SQLModel, Session, create_engine, select
 
-try:
-    import models
-    import utils
-except:
-    import src.models as models
-    import src.utils as utils
+import src.models as models
+import src.utils as utils
 
 class DataBase:
     def __init__(self, dbname, user, host, password, port = 5432):
