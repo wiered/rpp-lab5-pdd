@@ -127,16 +127,12 @@ class DataBase:
     # UTILS
     def createAllTables(self) -> None:
         """
-        Создаёт в базе все таблицы, описанные в ваших SQLModel-моделях.
-        Вызывает SQLModel.metadata.create_all(self.engine) –
-        автоматически генерирует и выполняет DDL на создание таблиц.
+        Создаёт в базе все таблицы, описанные в SQLModel-моделях.
         """
         SQLModel.metadata.create_all(self.engine)
 
     def dropAllTables(self) -> None:
         """
-        Удаляет из базы все таблицы, описанные в ваших SQLModel-моделях.
-        Вызывает SQLModel.metadata.drop_all(self.engine) –
-        автоматически генерирует и выполняет DDL на удаление таблиц.
+        Удаляет из базы все таблицы, описанные в SQLModel-моделях.
         """
         SQLModel.metadata.drop_all(self.engine)
