@@ -3,8 +3,8 @@
 This module handles dealing with postgre database.
 """
 
-__all__ = ["DB"]
-__version__ = "0.1"
+__all__ = ["DataBase"]
+__version__ = "1.0"
 __author__ = "Wiered"
 
 from datetime import datetime
