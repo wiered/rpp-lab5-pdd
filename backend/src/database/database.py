@@ -8,6 +8,7 @@ __version__ = "1.0"
 __author__ = "Wiered"
 
 from datetime import datetime
+import os
 from typing import List
 
 import psycopg2
@@ -95,31 +96,6 @@ class DataBase:
             if not self.roleExists(name):
                 self.createRole(name)
 
-    # Users
-    def userExists(self, username: str) -> bool:
-        session = self.getSession()
-
-        return not session.exec(
-                select(models.User).where(models.User.username == username)
-            ).first()
-
-    def createUser(self, username: str, passwordHash: str, roleName: str) -> models.User:
-        session = self.getSession()
-
-        role = self.getRoleByName(roleName)
-        user = models.User(username=username, password_hash=passwordHash, role=role)
-
-        session.add(user)
-        session.commit()
-        session.refresh(user)
-
-        return user
-
-    def getUserByUsername(self, username: str) -> models.User | None:
-        session = self.getSession()
-
-        return session.exec(select(models.User).where(models.User.username == username)).first()
-
     # UTILS
     def createAllTables(self) -> None:
         """
@@ -132,3 +108,11 @@ class DataBase:
         Удаляет из базы все таблицы, описанные в SQLModel-моделях.
         """
         SQLModel.metadata.drop_all(self.engine)
+
+db = DataBase(
+    os.environ.get("DB_NAME"),
+    os.environ.get("DB_USER"),
+    os.environ.get("DB_HOST"),
+    os.environ.get("DB_PASSWORD"),
+    os.environ.get("DB_PORT"),
+    )
