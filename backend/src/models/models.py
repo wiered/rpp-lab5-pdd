@@ -1,5 +1,5 @@
 ﻿from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from sqlmodel import SQLModel, Field, Relationship, Column, UniqueConstraint
 from sqlalchemy import CheckConstraint, ForeignKey, Numeric, String
@@ -36,7 +36,7 @@ class User(SQLModel, table=True):
         )
     )
     full_name: Optional[str] = Field(default=None)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     role: Optional[Role] = Relationship(back_populates="users")
     group_memberships: List["GroupMember"] = Relationship(back_populates="user")
@@ -131,7 +131,7 @@ class Article(SQLModel, table=True):
         sa_column=Column("content_type", String, nullable=False),
         regex="^(markdown|html)$"
     )
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     category: Optional[Category] = Relationship(back_populates="articles")
     media_items: List["Media"] = Relationship(back_populates="article")
@@ -256,7 +256,7 @@ class Assignment(SQLModel, table=True):
             index=True
             )
     )
-    assigned_at: datetime = Field(default_factory=datetime.utcnow)
+    assigned_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     __table_args__ = (
         CheckConstraint(
@@ -297,7 +297,7 @@ class Progress(SQLModel, table=True):
     status: str = Field(
         sa_column=Column("status", String, nullable=False)
     )
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     __table_args__ = (
         CheckConstraint(
@@ -335,7 +335,7 @@ class TestResult(SQLModel, table=True):
         sa_column=Column(Numeric(5,2), nullable=False)
     )
     passed: bool = Field(nullable=False)
-    taken_at: datetime = Field(default_factory=datetime.utcnow)
+    taken_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     user: Optional[User] = Relationship(back_populates="test_results")
     test: Optional[Test] = Relationship(back_populates="results")
