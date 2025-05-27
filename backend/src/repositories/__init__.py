@@ -1,1 +1,12 @@
-﻿
+﻿from .role_repository import RoleRepository
+from .user_repository import UserRepository
+from .category_repository import CategoryRepository
+from .article_repository import ArticleRepository
+from .media_repository import MediaRepository
+from .test_repository import TestRepository
+from .question_repository import QuestionRepository
+from .answer_option_repository import AnswerOptionRepository
+from .assignment_repository import AssignmentRepository
+from .progress_repository import ProgressRepository
+from .test_result_repository import TestResultRepository
+from .test_answer_repository import TestAnswerRepository
