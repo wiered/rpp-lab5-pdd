@@ -7,15 +7,17 @@ __all__ = ["DataBase"]
 __version__ = "1.0"
 __author__ = "Wiered"
 
-from datetime import datetime
 import os
-from typing import List
+from datetime import datetime
+from typing import Generator, List
 
 import psycopg2
-from sqlmodel import SQLModel, Session, create_engine, select
-
 import src.models as models
 import src.utils as utils
+from dotenv import load_dotenv
+from sqlmodel import Session, SQLModel, create_engine, select
+
+load_dotenv()
 
 class DataBase:
     def __init__(self, dbname, user, host, password, port = 5432):
@@ -69,6 +71,13 @@ class DataBase:
         Возвращает новый объект Session для работы с моделями SQLModel.
         """
         return Session(self.engine)
+
+    def get_session(self) -> Generator[Session, None, None]:
+        session = Session(self.engine)
+        try:
+            yield session
+        finally:
+            session.close()
 
     # ROLES
     def roleExists(self, name: str) -> bool:
