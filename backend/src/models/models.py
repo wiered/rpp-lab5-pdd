@@ -112,8 +112,6 @@ class Category(SQLModel, table=True):
     articles: List["Article"] = Relationship(back_populates="category")
     tests: List["Test"] = Relationship(back_populates="category")
     assignments: List["Assignment"] = Relationship(back_populates="category")
-    progress_entries: List["Progress"] = Relationship(back_populates="category")
-
 
 class Article(SQLModel, table=True):
     __tablename__ = 'articles'
@@ -135,6 +133,7 @@ class Article(SQLModel, table=True):
 
     category: Optional[Category] = Relationship(back_populates="articles")
     media_items: List["Media"] = Relationship(back_populates="article")
+    progress_entries: List["Progress"] = Relationship(back_populates="article")
 
     __table_args__ = (
         CheckConstraint(
@@ -287,9 +286,9 @@ class Progress(SQLModel, table=True):
             index=True
             )
     )
-    category_id: int = Field(
+    article_id: int = Field(
         sa_column=Column(
-            ForeignKey("categories.id", ondelete="CASCADE"),
+            ForeignKey("articles.id", ondelete="CASCADE"),
             nullable=False,
             index=True
             )
@@ -304,11 +303,11 @@ class Progress(SQLModel, table=True):
             "status IN ('not_started','in_progress','done')",
             name="chk_progress_status"
         ),
-        UniqueConstraint("user_id", "category_id", name="uq_progress_user_category"),
+        UniqueConstraint("user_id", "article_id", name="uq_progress_user_article"),
     )
 
     user: Optional[User] = Relationship(back_populates="progress_entries")
-    category: Optional[Category] = Relationship(back_populates="progress_entries")
+    article: Optional[Article] = Relationship(back_populates="progress_entries")
 
 
 class TestResult(SQLModel, table=True):
