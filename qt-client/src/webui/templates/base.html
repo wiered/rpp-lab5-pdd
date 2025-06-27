@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <button class="home-btn" onclick="location.href='/categories'">Главная</button>
+      <h3>{{ heading }}</h3>
+      <div class="buttons-grid">
+        {% for item in sidebar_items %}
+          <button
+            class="category-btn {% if item.type == active_type and item.id == active_id %}active{% endif %}"
+            onclick="
+              {% if item.type == 'category' %}
+                location.href='/categories/{{ item.id }}'
+              {% elif item.type == 'article' %}
+                location.href='/article/{{ item.id }}'
+              {% else %}
+                location.href='/test/{{ item.id }}'
+              {% endif %}
+            "
+          >
+            {{ item.title }}
+          </button>
+        {% endfor %}
+      </div>
+    </nav>
+
+    <main class="content">
+      {% block content %}{% endblock %}
+    </main>
+
+    <aside class="media">
+      <h3>Media</h3>
+      <div class="media-list">
+        {% block media %}
+          {% for m in media %}
+            <img src="{{ m.url }}" class="media-thumb"/>
+          {% endfor %}
+        {% endblock %}
+      </div>
+    </aside>
+  </div>
+</body>
+</html>

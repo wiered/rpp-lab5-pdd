@@ -1,0 +1,20 @@
+﻿{% extends "base.html" %}
+{% block title %}Статьи{% endblock %}
+
+{% block content %}
+  <h2>Статьи категории</h2>
+  <div class="buttons-grid">
+    {% for a in articles %}
+      <button
+        class="category-btn"
+        onclick="location.href='/article/{{ a.id }}'"
+      >{{ a.title }}</button>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block media %}
+  {% for m in media %}
+    <img src="{{ m.url }}" class="media-thumb"/>
+  {% endfor %}
+{% endblock %}

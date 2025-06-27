@@ -11,7 +11,6 @@ import os
 from datetime import datetime
 from typing import Generator, List
 
-import psycopg2
 import src.models as models
 import src.utils as utils
 from dotenv import load_dotenv
@@ -27,44 +26,12 @@ class DataBase:
         self.password = password
         self.port = port
 
-        self.conn = self._connectPsycopg2()
-        self.cursor = self._getCursor()
-
         # SQLModel/SQLAlchemy engine
         self._sqlalchemy_url = (
             f"postgresql://{self.user}:{self.password}"
             f"@{self.host}:{self.port}/{self.dbname}"
         )
         self.engine = create_engine(self._sqlalchemy_url, echo=True)
-
-    def _connectPsycopg2(self):
-        return psycopg2.connect(dbname=self.dbname, user=self.user, host=self.host, password=self.password, port=self.port)
-
-    def _getCursor(self):
-        return self.conn.cursor()
-
-    def _commit(self):
-        self.conn.commit()
-
-    def _close(self):
-        self._commit()
-        self.cursor.close()
-        self.conn.close()
-
-    def _executeQuery(self, query, params):
-        try:
-            print("Executing Query: ")
-            print(query)
-            print("Params: ", params)
-            self.cursor.execute(query, params)
-
-            return self.cursor.fetchone()
-        except Exception as e:
-
-            print("Rolling back... ", e)
-            self.conn.rollback()
-
-            return False
 
     def getSession(self) -> Session:
         """

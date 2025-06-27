@@ -1,0 +1,15 @@
+﻿{% extends "base.html" %}
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+  <h1>{{ article.title }}</h1>
+  <div class="article-content">
+    {{ content | safe }}
+  </div>
+{% endblock %}
+
+{% block media %}
+  {% for m in media %}
+    <img src="{{ m.url }}" class="media-thumb"/>
+  {% endfor %}
+{% endblock %}

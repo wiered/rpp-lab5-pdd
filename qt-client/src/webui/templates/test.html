@@ -1,0 +1,36 @@
+﻿{% extends "base.html" %}
+{% block title %}{{ tester.title }}{% endblock %}
+
+{% block content %}
+  <h1>{{ tester.title }}</h1>
+  <p>Макс. попыток: {{ tester.max_attempts }}</p>
+
+  <form id="test-form" method="post" action="">
+    {# your question_data comes in as `questions` directly #}
+    {% set q = questions %}
+
+    <fieldset>
+      <legend>{{ q.text }}</legend>
+      {% for o in q.options %}
+        <label>
+          <input
+            type="radio"
+            name="answer"
+            value="{{ o.id }}"
+            required
+          >
+          {{ o.text }}
+        </label><br>
+      {% endfor %}
+    </fieldset>
+
+    {# carry the test_id through as a hidden field if you need it on submit #}
+    <input type="hidden" name="tester_json" value='{{ tester_state | e }}'>
+
+    <button type="submit">Отправить ответ</button>
+  </form>
+{% endblock %}
+
+{% block media %}
+  <p>Нет медиа</p>
+{% endblock %}

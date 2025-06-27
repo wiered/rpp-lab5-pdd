@@ -11,7 +11,7 @@ from .options import router as options_router
 from .test_results import router as test_results_router
 from .progress import router as progress_router
 from .assigments import router as assignments_router
-from .rolse import router as roles_router
+from .roles import router as roles_router
 
 api_router = APIRouter()
 api_router.include_router(auth_router, tags=["auth"])
