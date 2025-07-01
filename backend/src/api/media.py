@@ -73,7 +73,7 @@ def get_media_by_id(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Media not found")
     return media
 
-@router.get("/media/{article_id}", response_model=List[MediaRead])
+@router.get("/article/{article_id}", response_model=List[MediaRead])
 def list_media_by_article(
     article_id: int,
     session: Session =  Depends(get_db),
