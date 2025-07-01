@@ -82,6 +82,9 @@ def create_question(
     current_user=Depends(get_current_user),
 ):
     """Создать новый вопрос."""
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = QuestionRepository(session)
     return repo.CreateQuestion(
         test_id=payload.test_id,
@@ -97,6 +100,9 @@ def update_question(
     current_user=Depends(get_current_user),
 ):
     """Обновить поля вопроса."""
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = QuestionRepository(session)
     updated = repo.UpdateQuestion(question_id, payload.dict(exclude_unset=True))
     if not updated:
@@ -110,6 +116,9 @@ def delete_question(
     current_user=Depends(get_current_user),
 ):
     """Удалить вопрос по ID."""
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = QuestionRepository(session)
     success = repo.DeleteQuestion(question_id)
     if not success:
