@@ -128,11 +128,12 @@ def get_test_result(
     result_repo = TestResultRepository(session)
     result = result_repo.GetResultById(result_id)
 
+    if not result:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Test result not found")
+
     if current_user.role.name != "admin" and result.user_id != current_user.id:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
 
-    if not result:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Test result not found")
     return result
 
 @router.get("/{result_id}/answers", response_model=List[TestAnswerRead])
