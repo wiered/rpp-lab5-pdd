@@ -85,6 +85,9 @@ def create_option(
     current_user = Depends(get_current_user),
 ):
     """Создать новый вариант ответа."""
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = AnswerOptionRepository(session)
     return repo.CreateOption(
         question_id=payload.question_id,
@@ -100,6 +103,9 @@ def update_option(
     current_user = Depends(get_current_user),
 ):
     """Обновить вариант ответа."""
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = AnswerOptionRepository(session)
     updated = repo.UpdateOption(option_id, payload.dict(exclude_unset=True))
     if not updated:
@@ -113,6 +119,9 @@ def delete_option(
     current_user = Depends(get_current_user),
 ):
     """Удалить вариант ответа."""
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = AnswerOptionRepository(session)
     success = repo.DeleteOption(option_id)
     if not success:
