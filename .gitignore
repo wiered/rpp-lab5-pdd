@@ -172,3 +172,21 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# temp files
+*.tex
+*.uml
+*.SQL
+*.sql
+*.ps1
+*.pdf
+*.bib
+.vscode
+
+/lab5_report/
+/report/
+/umls/
+
+
+
+
