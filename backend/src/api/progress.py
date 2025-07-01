@@ -57,6 +57,9 @@ def list_progress(
     Список записей прогресса.
     Фильтрация по user_id или category_id необязательна.
     """
+    if not user_id != current_user.id and current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = ProgressRepository(session)
     if user_id is not None and article_id is not None:
         pr = repo.GetProgressByUserAndArticle(user_id, article_id)
@@ -74,11 +77,20 @@ def get_progress(
     current_user = Depends(get_current_user),
 ):
     """Получить запись прогресса по ID."""
+
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = ProgressRepository(session)
-    prog = repo.GetProgressById(progress_id)
-    if not prog:
+    progress = repo.GetProgressById(progress_id)
+
+    if not progress:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Progress not found")
-    return prog
+
+    if progress.user_id != current_user.id:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
+    return progress
 
 @router.post("/", response_model=ProgressRead, status_code=status.HTTP_201_CREATED)
 def create_progress(
@@ -87,6 +99,9 @@ def create_progress(
     current_user = Depends(get_current_user),
 ):
     """Создать новую запись прогресса."""
+    if current_user.role.name != "admin" and payload.user_id != current_user.id:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = ProgressRepository(session)
     prog = repo.CreateProgress(
         user_id=payload.user_id,
@@ -102,6 +117,9 @@ def update_progress(
     current_user = Depends(get_current_user),
 ):
     """Обновить статус прогресса для пользователем и категорией."""
+    if current_user.role.name != "admin" and payload.user_id != current_user.id:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = ProgressRepository(session)
     updated = repo.UpdateProgress(
         user_id=payload.user_id,
@@ -119,6 +137,9 @@ def delete_progress(
     current_user = Depends(get_current_user),
 ):
     """Удалить запись прогресса по ID."""
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = ProgressRepository(session)
     success = repo.DeleteProgress(progress_id)
     if not success:
