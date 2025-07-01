@@ -1,0 +1,76 @@
+﻿body {
+  margin: 0; padding: 0;
+  font-family: sans-serif;
+  background-color: rgba(30,30,40,1);
+  color: rgba(200,200,200,1);
+}
+
+/* Сетка: 20% | 60% | 20% */
+.layout {
+  display: grid;
+  grid-template-columns: 20% 60% 20%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar, .content, .media {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.sidebar { background: rgba(30,30,40,1); }
+.content { background: rgba(50,50,70,1); }
+.media   { background: rgba(30,30,40,1); }
+
+/* Кнопка «Главная» */
+.home-btn {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  background-color: #6464A0;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+.home-btn:hover { background-color: #5a5a92; }
+
+/* Список кнопок в sidebar */
+.buttons-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.category-btn {
+  width: 100%;
+  padding: 8px;
+  background: #6464A0;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  text-align: left;
+  cursor: pointer;
+}
+.category-btn:hover,
+.category-btn.active {
+  background: #5a5a92;
+}
+
+/* Статья */
+.article-content {
+  background: rgba(30,30,40,1);
+  padding: 16px;
+  border-radius: 7px;
+}
+
+/* Медиа */
+.media-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.media-thumb {
+  width: 100%;
+  border-radius: 5px;
+  object-fit: cover;
+}
