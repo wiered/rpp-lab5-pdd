@@ -87,8 +87,10 @@ def get_user(
 
     repo = UserRepository(db)
     user = repo.getUserById(user_id)  # slight typo; correct below
+
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
+
     return UserRead(
         id=user.id,
         username=user.username,
@@ -107,18 +109,29 @@ def update_user(
     """
     Обновить пользователя: full_name и/или role_id.
     """
-    print("Update user:", user_id, data)
     repo = UserRepository(db)
-    updated = repo.updateUser(user_id, data.model_dump(exclude_unset=True))
-    if not updated:
+    data_model = data.model_dump(exclude_unset=True)
+
+    if data.model_dump(exclude_unset=True) == {}:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "No fields to update")
+
+    if user_id != current_user.id and current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
+    if current_user.role.name != "admin" and data_model.get("role_id") != None:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
+    user_object = repo.updateUser(user_id, data.model_dump(exclude_unset=True))
+
+    if not user_object:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "User not found")
 
     return UserRead(
-        id=updated.id,
-        username=updated.username,
-        full_name=updated.full_name,
-        role_id=updated.role_id,
-        created_at=updated.created_at,
+        id=user_object.id,
+        username=user_object.username,
+        full_name=user_object.full_name,
+        role_id=user_object.role_id,
+        created_at=user_object.created_at,
     )
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
