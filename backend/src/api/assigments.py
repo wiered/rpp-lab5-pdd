@@ -65,6 +65,18 @@ def list_assignments(
     """
     Список назначений. Фильтрация по user_id, group_id или category_id.
     """
+    if user_id:
+        if current_user.role.name != "admin" and user_id != current_user.id:
+            raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
+    if group_id:
+        if current_user.role.name != "admin" and current_user.role.name != "teacher":
+            raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
+    if category_id:
+        if current_user.role.name != "admin" and current_user.role.name != "teacher":
+            raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = AssignmentRepository(session)
     if user_id is not None:
         return repo.ListAssignmentsByUser(user_id)
@@ -82,10 +94,14 @@ def get_assignment(
 ):
     """Получить назначение по ID."""
     repo = AssignmentRepository(session)
-    assg = repo.GetAssignmentById(assignment_id)
-    if not assg:
+    assigment = repo.GetAssignmentById(assignment_id)
+    if not assigment:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Assignment not found")
-    return assg
+
+    if current_user.role.name != "admin" and assigment.user_id != current_user.id:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
+    return assigment
 
 @router.post("/user", response_model=AssignmentRead, status_code=status.HTTP_201_CREATED)
 def create_assignment_user(
@@ -94,6 +110,9 @@ def create_assignment_user(
     current_user=Depends(get_current_user),
 ):
     """Назначить категорию конкретному пользователю."""
+    if current_user.role.name != "admin" and current_user.role.name != "teacher":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = AssignmentRepository(session)
     return repo.CreateAssignmentForUser(
         assigned_by=payload.assigned_by,
@@ -109,6 +128,9 @@ def create_assignment_group(
     current_user=Depends(get_current_user),
 ):
     """Назначить категорию группе."""
+    if current_user.role.name != "admin" and current_user.role.name != "teacher":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = AssignmentRepository(session)
     return repo.CreateAssignmentForGroup(
         assigned_by=payload.assigned_by,
@@ -125,6 +147,9 @@ def update_assignment(
     current_user=Depends(get_current_user),
 ):
     """Обновить назначение (user_id или group_id)."""
+    if current_user.role.name != "admin" and current_user.role.name != "teacher":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = AssignmentRepository(session)
     updated = repo.UpdateAssignment(assignment_id, payload.dict(exclude_unset=True))
     if not updated:
@@ -138,6 +163,9 @@ def delete_assignment(
     current_user=Depends(get_current_user),
 ):
     """Удалить назначение по ID."""
+    if current_user.role.name != "admin" and current_user.role.name != "teacher":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = AssignmentRepository(session)
     success = repo.DeleteAssignment(assignment_id)
     if not success:

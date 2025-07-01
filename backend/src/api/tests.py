@@ -4,7 +4,7 @@ from typing import Generator, List, Optional
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator, ValidationError, conlist, constr
 from sqlmodel import Session
 
 from src.database import db
@@ -19,6 +19,11 @@ router = APIRouter(prefix="/tests", tags=["tests"])
 
 def get_db() -> Generator[Session, None, None]:
     yield from db.get_session()
+
+MAX_QUESTIONS = 50
+MAX_OPTIONS = 8
+MAX_TEXT_LEN = 255
+MAX_TITLE_LEN = 100
 
 # Pydantic-схемы
 class TestRead(BaseModel):
@@ -50,21 +55,35 @@ class TestImport(BaseModel):
 
 # 1.1. Модель для варианта ответа при создании (внутри вложенной структуры)
 class OptionNestedCreate(BaseModel):
-    text: str
+    text: str = Field(..., min_length=1, max_length=MAX_TEXT_LEN, strip_whitespace=True)
     is_correct: Optional[bool] = False
 
 # 1.2. Модель для вопроса при создании (внутри вложенной структуры)
 class QuestionNestedCreate(BaseModel):
-    text: str
+    text: str = Field(..., min_length=1, max_length=MAX_TEXT_LEN, strip_whitespace=True)
     weight: Optional[int] = 1
     options: List[OptionNestedCreate]
+
+    @field_validator('options')
+    @classmethod
+    def validate_options_count(cls, v):
+        if not (1 <= len(v) <= MAX_OPTIONS):
+            raise ValueError(f"Each question must have from 1 to {MAX_OPTIONS} options.")
+        return v
 
 # 1.3. Модель «полного» теста при создании
 class TestFullCreate(BaseModel):
     category_id: int
-    title: str
+    title: str = Field(..., min_length=1, max_length=100, strip_whitespace=True)
     max_attempts: Optional[int] = 3
     questions: List[QuestionNestedCreate]
+
+    @field_validator('questions')
+    @classmethod
+    def validate_questions_count(cls, v):
+        if not (1 <= len(v) <= MAX_QUESTIONS):
+            raise ValueError(f"Test must have from 1 to {MAX_QUESTIONS} questions.")
+        return v
 
 # -----------------------------------------
 # 2) Определим модели Pydantic для «полного» ответа (Test + вложенные Questions + вложенные Options)
