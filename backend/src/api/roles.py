@@ -121,6 +121,9 @@ def export_roles(
     """
     Экспортировать все роли в JSON-подобный список.
     """
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repository = RoleRepository(db)
     data = repository.ExportRoles()
     return data
