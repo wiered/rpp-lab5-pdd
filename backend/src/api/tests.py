@@ -145,6 +145,9 @@ def create_test(
     current_user = Depends(get_current_user),
 ):
     """Создать новый тест."""
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = TestRepository(session)
     return repo.CreateTest(
         category_id=payload.category_id,
@@ -160,6 +163,9 @@ def update_test(
     current_user = Depends(get_current_user),
 ):
     """Обновить тест."""
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = TestRepository(session)
     updated = repo.UpdateTest(test_id, payload.dict(exclude_unset=True))
     if not updated:
@@ -173,6 +179,9 @@ def delete_test(
     current_user = Depends(get_current_user),
 ):
     """Удалить тест."""
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = TestRepository(session)
     success = repo.DeleteTest(test_id)
     if not success:
@@ -186,6 +195,9 @@ def import_tests(
     current_user = Depends(get_current_user),
 ):
     """Массовый импорт тестов из JSON-массива."""
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = TestRepository(session)
     created = repo.ImportTests([item.dict() for item in payload])
     return created
@@ -196,6 +208,9 @@ def export_tests(
     current_user = Depends(get_current_user),
 ):
     """Массовый экспорт тестов."""
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+
     repo = TestRepository(session)
     return repo.ExportTests()
 
@@ -239,6 +254,9 @@ def create_test_full(
       ]
     }
     """
+
+    if current_user.role.name != "admin":
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
 
     # 3.1. Репозитории
     test_repo = TestRepository(session)
