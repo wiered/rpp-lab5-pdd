@@ -166,28 +166,3 @@ def export_users(
     repo = UserRepository(db)
     data = repo.exportUsers()
     return [UserExport(**item) for item in data]
-
-@router.post("/import", response_model=List[UserRead])
-def import_users(
-    payload: List[UserImport] = Body(...),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    """
-    Импорт пользователей из JSON-массива.
-    """
-    if current_user.role.name != "admin":
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
-
-    repo = UserRepository(db)
-    created = repo.importUsers([BaseModel.model_dump(item) for item in payload])
-    return [
-        UserRead(
-            id=u.id,
-            username=u.username,
-            full_name=u.full_name,
-            role_id=u.role_id,
-            created_at=u.created_at,
-        )
-        for u in created
-    ]
