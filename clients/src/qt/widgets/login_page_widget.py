@@ -129,7 +129,7 @@ class LoginPageWidget(QWidget):
         self.parent.stacked.setCurrentIndex(1)
 
         # После показа основной страницы запускаем загрузку категорий
-        QTimer.singleShot(0, lambda: self.parent.load_categories(None))
+        QTimer.singleShot(0, lambda: self.parent.main_page_widget.load_categories(None))
 
     @asyncSlot()
     async def on_register_clicked(self):
