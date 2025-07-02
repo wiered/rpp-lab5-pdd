@@ -11,7 +11,8 @@ from PySide6.QtCore    import QTimer
 from qasync            import QEventLoop
 
 from src.webui         import app
-from src.qt            import MainWindow, STYLESHEET, API_BASE
+from src.qt            import MainWindow, API_BASE
+from src.qt.styles     import STYLESHEET
 from src.rest_client   import AsyncApiClient
 
 
