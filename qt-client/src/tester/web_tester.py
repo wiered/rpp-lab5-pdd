@@ -6,8 +6,6 @@ from .abc_tester import (
     )
 
 
-
-
 class WebTester(BaseTester, ABC):
     def __init__(
         self,

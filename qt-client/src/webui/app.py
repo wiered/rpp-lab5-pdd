@@ -1,8 +1,10 @@
 ﻿import json
+import os
 from pathlib import Path
 from typing import Optional
 
 import markdown
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -12,7 +14,11 @@ from starlette.middleware.sessions import SessionMiddleware
 from src.rest_client import AsyncApiClient
 from src.tester import WebTester
 
-API_BASE = "http://127.0.0.1:8082/api"
+load_dotenv()
+
+SERVER_PORT = os.environ.get("SERVER_PORT")
+
+API_BASE = f"http://127.0.0.1:{SERVER_PORT}/api"
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="CHANGE_THIS_TO_SECRET")

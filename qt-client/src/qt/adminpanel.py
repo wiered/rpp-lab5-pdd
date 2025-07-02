@@ -48,7 +48,7 @@ class AdminPanel(QWidget):
         self.tabs.addTab(self.tests_tab, "Тесты")
         self.tabs.addTab(self.users_tab, "Пользователи")
 
-                # --- Кнопка «Back» ---
+        # --- Кнопка «Back» ---
         back_btn = QPushButton("Back")
         back_btn.setFixedHeight(30)
         back_btn.clicked.connect(self.on_back_clicked)
