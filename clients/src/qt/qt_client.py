@@ -25,6 +25,7 @@ SERVER_PORT = os.getenv('SERVER_PORT')
 
 API_BASE = f"http://127.0.0.1:{SERVER_PORT}/api"
 
+
 class MainWindow(QMainWindow):
     def __init__(self, client: AsyncApiClient):
         super().__init__()
@@ -49,7 +50,6 @@ class MainWindow(QMainWindow):
 
         # ===== 3) АДМИН-ПАНЕЛЬ (index = 2) =====
         self.admin_panel = AdminPanelWidget(self.client)
-
 
         # ===== 4) СТРАНИЦА ПЕРСОНАЛЬНЫХ ДАННЫХ (index = 3) =====
         self.personal_page = PersonalPageWidget(self.client)
@@ -109,25 +109,3 @@ class MainWindow(QMainWindow):
                 self.stacked.removeWidget(widget)
                 widget.deleteLater()
             self.test_pages.remove(test_window)
-
-def main():
-    """
-    Точка входа. Создаем QApplication + qasync‐цикл, передаем client в MainWindow
-    и сразу же показываем главное окно (в котором по‐умолчанию будет отображаться форма логина).
-    """
-    app = QApplication(sys.argv)
-    app.setStyleSheet(STYLESHEET)
-
-    loop = QEventLoop(app)
-    asyncio.set_event_loop(loop)
-
-    client = AsyncApiClient(base_url=API_BASE)
-    window = MainWindow(client)
-    window.show()
-
-    with loop:
-        loop.run_forever()
-
-
-if __name__ == '__main__':
-    main()
