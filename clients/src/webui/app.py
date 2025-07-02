@@ -26,7 +26,6 @@ app.add_middleware(SessionMiddleware, secret_key="CHANGE_THIS_TO_SECRET")
 app.mount("/static", StaticFiles(directory="./src/webui/static"), name="static")
 
 media_dir = Path(__file__).parent / "media"
-print(media_dir)
 app.mount("/media", StaticFiles(directory=str(media_dir)), name="media")
 templates = Jinja2Templates(directory="./src/webui/templates")
 
@@ -230,7 +229,6 @@ async def submit_test(request: Request,
 ):
     # 1. reconstruct
     state = json.loads(tester_json)
-    print(f"state: {state}")
     tester = WebTester(
         test_id=state["test_id"],
         category_id=state["category_id"],

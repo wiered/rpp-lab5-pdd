@@ -151,7 +151,6 @@ class MainPageWidget(QWidget):
     @asyncSlot(int)
     async def load_article(self, article_id):
         # Запрашиваем саму статью по ID
-        print(f"Загружаю статью {article_id}")
         art = await self.client.get_article(article_id)
 
         # Устанавливаем название статьи сверху

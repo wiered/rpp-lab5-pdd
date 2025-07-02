@@ -66,8 +66,6 @@ class MainWindow(QMainWindow):
         # Сразу переключаемся на страницу логина
         self.stacked.setCurrentIndex(0)
 
-    # ===== АСИНХРОННЫЕ СЛОТЫ ДЛЯ ЛОГИНА/РЕГИСТРАЦИИ =====
-
     # ===== МЕТОДЫ ОСНОВНОГО ОКНА =====
     @asyncSlot()
     async def on_personal(self):

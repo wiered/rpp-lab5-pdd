@@ -94,7 +94,6 @@ class LoginPageWidget(QWidget):
             await self.client.login(user, pwd)
         except Exception as e:
             self.status_label.setText("Login failed")
-            print(f"Login error: {e}")
             return
 
          # --- Сразу после успешного login делаем GET /auth/me, чтобы узнать роль ---
@@ -107,7 +106,6 @@ class LoginPageWidget(QWidget):
                 self.admin_btn.hide()
         except Exception as e:
             # Если даже GET /auth/me не сработал, скрываем Admin без лишнего шума
-            print(f"Не удалось получить current_user: {e}")
             self.admin_btn.hide()
         # ------------------------------------------------------------------------
 
@@ -134,7 +132,6 @@ class LoginPageWidget(QWidget):
             await self.client.register(user, pwd)
         except Exception as e:
             self.status_label.setText("Registration failed")
-            print(f"Register error: {e}")
             return
 
         self.status_label.setText("Registered. You can login.")

@@ -128,7 +128,6 @@ class PersonalPageWidget(QWidget):
         # ===== Заполняем «Прочтённые статьи» – просто список progress-элементов =====
         progresses = await self.client.list_progress(user_id=self.user_id)
         self.articles_list.clear()
-        print(progresses)
         if progresses:
             for article in progresses:
                 art_id = article.get("article_id")

@@ -1,7 +1,7 @@
 ﻿# проверим, что файл done.svg там есть
 import os
 
-base_dir = os.path.abspath(os.path.dirname(__file__))
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 media_dir = os.path.join(base_dir, "media")
 
 done_svg_path = os.path.join(media_dir, "done.svg")

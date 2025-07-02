@@ -371,7 +371,6 @@ class ArticlesTab(QWidget):
     @asyncSlot(dict)
     async def _create_article(self, data: dict):
         try:
-            print(data)
             await self.client.create_article(**data)
             await self._load_articles(data["category_id"])
         except Exception as e:
@@ -392,7 +391,6 @@ class ArticlesTab(QWidget):
     @asyncSlot(int, dict)
     async def _update_article(self, article_id: int, data: dict):
         try:
-            print(data)
             await self.client.update_article(article_id, title=data.get("title"), content=data.get("content"), content_type=data.get("content_type"))
             cat_id = data.get("category_id", self.cat_combo.currentData())
             await self._load_articles(cat_id)
@@ -1080,17 +1078,14 @@ class UsersTab(QWidget):
             return
         new_role = self.role_combo.currentData()
         payload = {"role_id": new_role}
-        print("Payload для обновления роли:", payload)
         QTimer.singleShot(0, lambda: asyncio.create_task(self._update_user_role(self.selected_user["id"], payload)))
 
     @asyncSlot(int, dict)
     async def _update_user_role(self, user_id: int, payload: dict):
         try:
-            print(f"Отправляю PUT /users/{user_id} body={payload}")
             await self.client.update_user(user_id, **payload)
             await self.load_users()
         except Exception as e:
-            print("Server returned error:", repr(e))
             QMessageBox.critical(self, "Ошибка", f"Не удалось обновить роль:\n{e}")
 
     @Slot()

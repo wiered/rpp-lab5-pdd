@@ -77,7 +77,6 @@ class AsyncApiClient:
         headers = {k: v for k, v in self.headers.items() if k != 'Content-Type'}
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
         async with self.session.post(url, headers=headers, data=form) as resp:
-            print(resp.text)
             resp.raise_for_status()
             token_data = await resp.json()
         self.set_token(token_data['access_token'])
@@ -505,7 +504,6 @@ class AsyncApiClient:
             payload['full_name'] = full_name
         if role_id is not None:
             payload['role_id'] = role_id
-        print(payload)
         return await self._request('PUT', f'/users/{user_id}', json=payload)
 
     async def delete_user(self, user_id: int) -> None:

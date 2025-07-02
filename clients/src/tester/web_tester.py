@@ -29,7 +29,6 @@ class WebTester(BaseTester, ABC):
 
         # internal storage of question dicts
         self._questions: List[Dict[str, Any]] = []
-        print(questions)
         for item in (questions or []):
             try:
                 q = item['question']
