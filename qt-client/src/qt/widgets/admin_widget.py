@@ -17,7 +17,7 @@ from qasync import asyncSlot
 from src.rest_client import AsyncApiClient
 
 
-class AdminPanel(QWidget):
+class AdminPanelWidget(QWidget):
     def __init__(self, client: AsyncApiClient):
         super().__init__()
         self.client = client

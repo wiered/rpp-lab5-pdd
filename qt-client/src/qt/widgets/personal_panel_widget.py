@@ -19,7 +19,7 @@ STATUS_DICT = {
     "done": "Завершено"
 }
 
-class PersonalPage(QWidget):
+class PersonalPageWidget(QWidget):
     def __init__(self, client: AsyncApiClient):
         super().__init__()
         self.client = client

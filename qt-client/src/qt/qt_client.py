@@ -14,11 +14,8 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QDialog, QFrame,
                                QScrollArea, QSizePolicy, QStackedLayout,
                                QTextBrowser, QVBoxLayout, QWidget)
 from qasync import QEventLoop, asyncSlot
-
 from src.qt.styles import STYLESHEET
-from src.qt.adminpanel import AdminPanel
-from src.qt.personalpage import PersonalPage
-from src.qt.widgets import TestWidget
+from src.qt.widgets import AdminPanelWidget, PersonalPageWidget, TestWidget
 from src.rest_client import AsyncApiClient
 
 load_dotenv()
@@ -196,7 +193,7 @@ class MainWindow(QMainWindow):
         self.test_pages = []  # список текущих TestWidget-ов (чтобы потом удалять)
 
          # === Админ-панель (index = 2) ===
-        self.admin_panel = AdminPanel(self.client)
+        self.admin_panel = AdminPanelWidget(self.client)
         self.stacked.addWidget(self.admin_panel)
 
         # Указываем, что personal_page будет создаваться при первом же нажатии
@@ -389,7 +386,7 @@ class MainWindow(QMainWindow):
     async def on_personal(self):
         # Если ещё не создали PersonalPage, создаём и добавляем в стек
         if self.personal_page is None:
-            self.personal_page = PersonalPage(self.client)
+            self.personal_page = PersonalPageWidget(self.client)
             self.stacked.addWidget(self.personal_page)
 
         # Переключаемся на страницу PersonalPage
