@@ -19,8 +19,11 @@ from src.qt.widgets import AdminPanelWidget, PersonalPageWidget, TestWidget
 from src.rest_client import AsyncApiClient
 
 class LoginPageWidget(QWidget):
-    def __init__(self):
+    def __init__(self, parent = None, client = None):
         super().__init__()
+        self.parent = parent
+        self.client = client
+
         outer_layout = QVBoxLayout()
         self.setLayout(outer_layout)
 
@@ -84,3 +87,68 @@ class LoginPageWidget(QWidget):
 
         # Нижний spacer
         outer_layout.addStretch(1)
+
+        self.login_btn.clicked.connect(self.on_login_clicked)
+        self.reg_btn.clicked.connect(self.on_register_clicked)
+
+    @asyncSlot()
+    async def on_login_clicked(self):
+        """
+        Этот слот вызывается, когда пользователь нажал кнопку «Login» на login-странице.
+        Если успешный login, переключаемся на основную страницу и запускаем load_categories.
+        """
+        user = self.user_input.text().strip()
+        pwd = self.pass_input.text().strip()
+
+        if not user or not pwd:
+            self.status_label.setText("Username and password are required")
+            return
+
+        try:
+            await self.client.login(user, pwd)
+        except Exception as e:
+            self.status_label.setText("Login failed")
+            print(f"Login error: {e}")
+            return
+
+         # --- Сразу после успешного login делаем GET /auth/me, чтобы узнать роль ---
+        try:
+            me = await self.client.me()  # или get_auth_me()
+            role = me.get("role") or me.get("role_id")
+            # Если поле role — строковое (например, "admin"), проверяем на "admin"
+            # Если role_id — числовое, нужно свериться, какой ID админа в базе
+            if role != "admin" and role != 3:
+                self.admin_btn.hide()
+        except Exception as e:
+            # Если даже GET /auth/me не сработал, скрываем Admin без лишнего шума
+            print(f"Не удалось получить current_user: {e}")
+            self.admin_btn.hide()
+        # ------------------------------------------------------------------------
+
+        # Если залогинились успешно — переключаемся на основную страницу
+        self.parent.stacked.setCurrentIndex(1)
+
+        # После показа основной страницы запускаем загрузку категорий
+        QTimer.singleShot(0, lambda: self.parent.load_categories(None))
+
+    @asyncSlot()
+    async def on_register_clicked(self):
+        """
+        Этот слот вызывается, когда пользователь нажал кнопку «Register» на login-странице.
+        Пытаемся зарегистрировать, и при успехе показываем сообщение, что можно войти.
+        """
+        user = self.user_input.text().strip()
+        pwd = self.pass_input.text().strip()
+
+        if not user or not pwd:
+            self.status_label.setText("Username and password are required")
+            return
+
+        try:
+            await self.client.register(user, pwd)
+        except Exception as e:
+            self.status_label.setText("Registration failed")
+            print(f"Register error: {e}")
+            return
+
+        self.status_label.setText("Registered. You can login.")
