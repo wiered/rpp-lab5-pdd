@@ -89,6 +89,33 @@ class MainPageWidget(QWidget):
         self.back_btn.clicked.connect(self.on_back)
         self.list_widget.itemClicked.connect(self.on_item)
 
+    @asyncSlot
+    async def _get_html_content(self, article):
+        if article["content_type"] == "markdown":
+            html = markdown.markdown(article["content"])
+        else:
+            html = article["content"]
+
+        return html
+
+    @asyncSlot
+    async def _get_media(self, article_id):
+        media = await self.client.list_media_by_article(article_id)
+        self.media_area.clear()
+
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        media_dir = os.path.join(base_dir, "media")
+
+        for m in media:
+            image_path = os.path.join(media_dir, m["url"])
+            pixmap = QPixmap(image_path)
+            if not pixmap.isNull():
+                icon = QIcon(pixmap)
+                item = QListWidgetItem(icon, "")
+            else:
+                item = QListWidgetItem(m["url"])
+            self.media_area.addItem(item)
+
     @asyncSlot()
     async def _get_categorys(self, parent_id):
         cats = await self.client.list_categories()
@@ -168,28 +195,10 @@ class MainPageWidget(QWidget):
         self.title_label.setText(art.get("title", ""))
 
         # Отображаем контент статьи
-        if art["content_type"] == "markdown":
-            html = markdown.markdown(art["content"])
-        else:
-            html = art["content"]
-        self.article_view.setHtml(html)
+        self.article_view.setHtml(await self._get_html_content(art))
 
         # Загружаем медиа этого article_id
-        media = await self.client.list_media_by_article(article_id)
-        self.media_area.clear()
-
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-        media_dir = os.path.join(base_dir, "media")
-
-        for m in media:
-            image_path = os.path.join(media_dir, m["url"])
-            pixmap = QPixmap(image_path)
-            if not pixmap.isNull():
-                icon = QIcon(pixmap)
-                item = QListWidgetItem(icon, "")
-            else:
-                item = QListWidgetItem(m["url"])
-            self.media_area.addItem(item)
+        await self._get_media(article_id)
 
         me = await self.client.me()
         await self.client.create_progress(
