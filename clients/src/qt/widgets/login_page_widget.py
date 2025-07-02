@@ -78,6 +78,20 @@ class LoginPageWidget(QWidget):
         self.reg_btn.clicked.connect(self.on_register_clicked)
 
     @asyncSlot()
+    async def _get_role(self):
+        try:
+            me = await self.client.me()  # или get_auth_me()
+            role = me.get("role") or me.get("role_id")
+            # Если поле role — строковое (например, "admin"), проверяем на "admin"
+            # Если role_id — числовое, нужно свериться, какой ID админа в базе
+            if role != "admin" and role != 3:
+                self.parent.main_page_widget.admin_btn.hide()
+        except Exception as e:
+            # Если даже GET /auth/me не сработал, скрываем Admin без лишнего шума
+            self.parent.main_page_widget.admin_btn.hide()
+        # ------------------------------------------------------------------------
+
+    @asyncSlot()
     async def on_login_clicked(self):
         """
         Этот слот вызывается, когда пользователь нажал кнопку «Login» на login-странице.
@@ -96,18 +110,8 @@ class LoginPageWidget(QWidget):
             self.status_label.setText("Login failed")
             return
 
-         # --- Сразу после успешного login делаем GET /auth/me, чтобы узнать роль ---
-        try:
-            me = await self.client.me()  # или get_auth_me()
-            role = me.get("role") or me.get("role_id")
-            # Если поле role — строковое (например, "admin"), проверяем на "admin"
-            # Если role_id — числовое, нужно свериться, какой ID админа в базе
-            if role != "admin" and role != 3:
-                self.admin_btn.hide()
-        except Exception as e:
-            # Если даже GET /auth/me не сработал, скрываем Admin без лишнего шума
-            self.admin_btn.hide()
-        # ------------------------------------------------------------------------
+        # --- Сразу после успешного login делаем GET /auth/me, чтобы узнать роль ---
+        await self._get_role()
 
         # Если залогинились успешно — переключаемся на основную страницу
         self.parent.stacked.setCurrentIndex(1)
