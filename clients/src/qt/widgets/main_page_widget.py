@@ -89,7 +89,7 @@ class MainPageWidget(QWidget):
         self.back_btn.clicked.connect(self.on_back)
         self.list_widget.itemClicked.connect(self.on_item)
 
-    @asyncSlot
+    @asyncSlot()
     async def _get_html_content(self, article):
         if article["content_type"] == "markdown":
             html = markdown.markdown(article["content"])
@@ -98,9 +98,16 @@ class MainPageWidget(QWidget):
 
         return html
 
-    @asyncSlot
+    @asyncSlot()
     async def _get_media(self, article_id):
-        media = await self.client.list_media_by_article(article_id)
+
+        try:
+            media = await self.client.list_media_by_article(article_id)
+        except:
+            print("Ошибка при загрузке медиа")
+            self.media_area.clear()
+            return
+
         self.media_area.clear()
 
         base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -186,7 +193,7 @@ class MainPageWidget(QWidget):
 
         self.back_btn.setEnabled(bool(self.history))
 
-    @asyncSlot(int)
+    @asyncSlot()
     async def load_article(self, article_id):
         # Запрашиваем саму статью по ID
         art = await self.client.get_article(article_id)
@@ -195,7 +202,8 @@ class MainPageWidget(QWidget):
         self.title_label.setText(art.get("title", ""))
 
         # Отображаем контент статьи
-        self.article_view.setHtml(await self._get_html_content(art))
+        html = await self._get_html_content(art)
+        self.article_view.setHtml(html)
 
         # Загружаем медиа этого article_id
         await self._get_media(article_id)
