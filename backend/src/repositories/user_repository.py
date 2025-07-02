@@ -59,8 +59,8 @@ class UserRepository:
     # --- Дополнительные CRUD-методы ---
     def listAllUsers(self) -> List[User]:
         """Возвращает список всех пользователей."""
-        statement = select(User)
-        return self.session.exec(statement).limit(1000).all()
+        statement = select(User).limit(1000)
+        return self.session.exec(statement).all()
 
     def listByRole(self, role_name: str) -> List[User]:
         """Возвращает список пользователей определённой роли."""
@@ -68,8 +68,8 @@ class UserRepository:
         role = self.session.exec(stmt_role).first()
         if not role:
             return []
-        stmt = select(User).where(User.role_id == role.id)
-        return self.session.exec(stmt).limit(1000).all()
+        stmt = select(User).where(User.role_id == role.id).limit(1000)
+        return self.session.exec(stmt).all()
 
     def changePassword(self, user_id: int, new_hash: str) -> bool:
         """Меняет пароль пользователя на новый хеш. Возвращает True при успехе."""
