@@ -89,33 +89,8 @@ class MainPageWidget(QWidget):
         self.back_btn.clicked.connect(self.on_back)
         self.list_widget.itemClicked.connect(self.on_item)
 
-    @asyncSlot(object)
-    async def on_item(self, item: QListWidgetItem):
-        data = item.data(Qt.UserRole)
-        kind = data.get("type")
-        if kind == "category":
-            self.history.append(self.current_id)
-            await self.load_categories(data["id"])
-        elif kind == "article":
-            await self.load_article(data["id"])
-        elif kind == "test":
-            # Новый блок: обработка клика по тесту
-            test_id = data["id"]
-            self.parent.on_test(test_id)
-
-        elif kind == "test_ui":  # зарезервировано, если понадобится
-            pass
-        elif kind == "test_results":
-            pass
-        else:
-            QMessageBox.information(self, "Test", "Неизвестный элемент списка")
-
-    @asyncSlot(object)
-    async def load_categories(self, parent_id):
-        self.list_widget.clear()
-        self.current_id = parent_id
-
-        # 1) Подкатегории (как было)
+    @asyncSlot()
+    async def _get_categorys(self, parent_id):
         cats = await self.client.list_categories()
         subs = [c for c in cats if c["parent_id"] == parent_id]
         for c in subs:
@@ -123,7 +98,8 @@ class MainPageWidget(QWidget):
             item.setData(Qt.UserRole, {"type": "category", "id": c["id"]})
             self.list_widget.addItem(item)
 
-        # 2) Статьи (как было)
+    @asyncSlot()
+    async def _get_articles(self, parent_id):
         if parent_id is not None:
             arts = await self.client.list_articles_by_category(parent_id)
             for art in arts:
@@ -131,22 +107,57 @@ class MainPageWidget(QWidget):
                 item.setData(Qt.UserRole, {"type": "article", "id": art["id"]})
                 self.list_widget.addItem(item)
 
+    @asyncSlot()
+    async def _get_tests(self, parent_id):
+        try:
+            tests = await self.client.list_tests_by_category(parent_id)
+                # tests — список объектов { "id": int, "category_id": int, "title": str, "max_attempts": int }
+            for t in tests:
+                item = QListWidgetItem(f"Тест: {t['title']}")
+                item.setData(Qt.UserRole, {"type": "test", "id": t["id"]})
+                    # (по желанию можно установить другой фон/иконку)
+                self.list_widget.addItem(item)
+        except Exception as e:
+                # Если API отвалился — не фатально, просто не рисуем тесты
+            print(f"Ошибка при загрузке тестов: {e}")
+
+    @asyncSlot(object)
+    async def on_item(self, item: QListWidgetItem):
+        data = item.data(Qt.UserRole)
+        kind = data.get("type")
+        match kind:
+            case "category":
+                self.history.append(self.current_id)
+                await self.load_categories(data["id"])
+            case "article":
+                await self.load_article(data["id"])
+            case "test":
+                # Новый блок: обработка клика по тесту
+                test_id = data["id"]
+                self.parent.on_test(test_id)
+            case "test_ui":  # зарезервировано, если понадобится
+                pass
+            case "test_results":
+                pass
+            case _:
+                QMessageBox.information(self, "Test", "Неизвестный элемент списка")
+
+    @asyncSlot(object)
+    async def load_categories(self, parent_id):
+        self.list_widget.clear()
+        self.current_id = parent_id
+
+        # 1) Подкатегории (как было)
+        await self._get_categorys(parent_id)
+
+        # 2) Статьи (как было)
+        await self._get_articles(parent_id)
+
         # 3) ** Добавляем проверку: есть ли у этой категории тесты? **
         if parent_id is not None:
-            try:
-                tests = await self.client.list_tests_by_category(parent_id)
-                # tests — список объектов { "id": int, "category_id": int, "title": str, "max_attempts": int }
-                for t in tests:
-                    item = QListWidgetItem(f"Тест: {t['title']}")
-                    item.setData(Qt.UserRole, {"type": "test", "id": t["id"]})
-                    # (по желанию можно установить другой фон/иконку)
-                    self.list_widget.addItem(item)
-            except Exception as e:
-                # Если API отвалился — не фатально, просто не рисуем тесты
-                print(f"Ошибка при загрузке тестов: {e}")
+            await self._get_tests(parent_id)
 
         self.back_btn.setEnabled(bool(self.history))
-
 
     @asyncSlot(int)
     async def load_article(self, article_id):
