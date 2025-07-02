@@ -187,6 +187,11 @@ cython_debug/
 /report/
 /umls/
 
-
-
-
+napoln.md
+prompt.md
+control.md
+send.md
+seed_media.py
+seed.py
+tree.txt
+image.png
