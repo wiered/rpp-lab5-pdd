@@ -24,24 +24,11 @@ SERVER_PORT = os.getenv('SERVER_PORT')
 
 API_BASE = f"http://127.0.0.1:{SERVER_PORT}/api"
 
-class MainWindow(QMainWindow):
-    def __init__(self, client: AsyncApiClient):
+class LoginPageWidget(QWidget):
+    def __init__(self):
         super().__init__()
-        self.client = client
-
-        self.setWindowTitle("PDD Client")
-        self.resize(1200, 800)
-
-        # Центральный виджет с QStackedLayout
-        central = QWidget()
-        self.stacked = QStackedLayout()
-        central.setLayout(self.stacked)
-        self.setCentralWidget(central)
-
-        # ===== 1) СТРАНИЦА ЛОГИНА (index = 0) =====
-        login_page = QWidget()
         outer_layout = QVBoxLayout()
-        login_page.setLayout(outer_layout)
+        self.setLayout(outer_layout)
 
         # Верхний spacer
         outer_layout.addStretch(1)
@@ -85,7 +72,6 @@ class MainWindow(QMainWindow):
         btn_layout = QHBoxLayout()
         btn_layout.addWidget(self.login_btn)
         btn_layout.addWidget(self.reg_btn)
-        # Опционально: можно добавить отступы между кнопками
         btn_layout.setSpacing(20)
         inner_layout.addLayout(btn_layout)
         # ===========================================================
@@ -105,11 +91,33 @@ class MainWindow(QMainWindow):
         # Нижний spacer
         outer_layout.addStretch(1)
 
-        # Подключаем асинхронные слоты для логина/регистрации
-        self.login_btn.clicked.connect(self.on_login_clicked)
-        self.reg_btn.clicked.connect(self.on_register_clicked)
 
-        self.stacked.addWidget(login_page)  # это будет index=0
+class MainWindow(QMainWindow):
+    def __init__(self, client: AsyncApiClient):
+        super().__init__()
+        self.client = client
+
+        self.setWindowTitle("PDD Client")
+        self.resize(1200, 800)
+
+        # Центральный виджет с QStackedLayout
+        central = QWidget()
+        self.stacked = QStackedLayout()
+        central.setLayout(self.stacked)
+        self.setCentralWidget(central)
+
+        # ===== 1) СТРАНИЦА ЛОГИНА (index = 0) =====
+        self.login_page = LoginPageWidget()
+
+        # Подключаем асинхронные слоты для логина/регистрации
+        self.login_page.login_btn.clicked.connect(self.on_login_clicked)
+        self.login_page.reg_btn.clicked.connect(self.on_register_clicked)
+
+        self.stacked.addWidget(self.login_page)  # это будет index=0
+
+        self.user_input = self.login_page.user_input
+        self.pass_input = self.login_page.pass_input
+        self.status_label = self.login_page.status_label
 
         # ===== 2) ОСНОВНАЯ СТРАНИЦА (index = 1) =====
         main_page = QWidget()
