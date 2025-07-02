@@ -1,22 +1,8 @@
-﻿import asyncio
-import os
-import sys
-from functools import partial
+﻿from PySide6.QtCore import Qt, QTimer
+from PySide6.QtWidgets import (QHBoxLayout, QLabel, QLineEdit, QPushButton,
+                               QSizePolicy, QVBoxLayout, QWidget)
+from qasync import asyncSlot
 
-import markdown
-from dotenv import load_dotenv
-from PySide6.QtCore import QSize, Qt, QTimer, Slot
-from PySide6.QtGui import QIcon, QPixmap
-from PySide6.QtWidgets import (QApplication, QButtonGroup, QDialog, QFrame,
-                               QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-                               QListWidget, QListWidgetItem, QMainWindow,
-                               QMessageBox, QPushButton, QRadioButton,
-                               QScrollArea, QSizePolicy, QStackedLayout,
-                               QTextBrowser, QVBoxLayout, QWidget)
-from qasync import QEventLoop, asyncSlot
-from src.qt.styles import STYLESHEET
-from src.qt.widgets import AdminPanelWidget, PersonalPageWidget, TestWidget
-from src.rest_client import AsyncApiClient
 
 class LoginPageWidget(QWidget):
     def __init__(self, parent = None, client = None):
