@@ -65,7 +65,7 @@ class MainWindow(QMainWindow):
         QTimer.singleShot(0, lambda: self.personal_page.load_data())
 
     @asyncSlot(object)
-    def on_admin(self):
+    async def on_admin(self):
         """
         Вызывается при клике на кнопку "Admin Panel" в главном экране.
         Просто переключаемся на виджет AdminPanel и запускаем загрузку данных.
@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
         # Переключаемся на страницу с админ‐панелью
         self.stacked.setCurrentWidget(self.admin_panel)
         # Запускаем начальную загрузку данных (категории, пользователи, тесты и т.д.)
-        QTimer.singleShot(0, self.admin_panel.load_all)
+        await self.admin_panel.load_all()
 
     def on_test(self, test_id: int):
         test_window = TestWidget(self.client, test_id, self)
