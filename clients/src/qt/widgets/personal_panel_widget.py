@@ -94,7 +94,7 @@ class PersonalPageWidget(QWidget):
         articles = []
         for assignment in assignments:
             articles_for_category = await self.client.list_articles_by_category(assignment["category_id"])
-            articles.append(*articles_for_category)
+            articles.extend(articles_for_category)
 
         articles_ids = []
         for article in articles:
