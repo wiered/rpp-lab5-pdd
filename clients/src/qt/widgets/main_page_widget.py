@@ -124,9 +124,20 @@ class MainPageWidget(QWidget):
             self.media_area.addItem(item)
 
     @asyncSlot()
-    async def _get_categorys(self, parent_id):
-        cats = await self.client.list_categories()
-        subs = [c for c in cats if c["parent_id"] == parent_id]
+    async def _get_categories(self, parent_id):
+        me = await self.client.me()
+        user_id = me["id"]
+
+        assigments = await self.client.list_assignments(user_id=user_id)
+        categories_ids = [c["category_id"] for c in assigments]
+
+        all_categories = await self.client.list_categories()
+        categories = [c for c in all_categories if c["id"] in categories_ids]
+
+        if parent_id is not None:
+            subs = [c for c in all_categories if c["parent_id"] == parent_id]
+        else:
+            subs = categories
         for c in subs:
             item = QListWidgetItem(c["title"])
             item.setData(Qt.UserRole, {"type": "category", "id": c["id"]})
@@ -182,7 +193,7 @@ class MainPageWidget(QWidget):
         self.current_id = parent_id
 
         # 1) Подкатегории (как было)
-        await self._get_categorys(parent_id)
+        await self._get_categories(parent_id)
 
         # 2) Статьи (как было)
         await self._get_articles(parent_id)
