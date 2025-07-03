@@ -51,6 +51,7 @@ def list_users(
     role: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
+    limit: int = 1000
 ):
     """
     Список пользователей.
@@ -59,11 +60,14 @@ def list_users(
     if current_user.role.name != "admin":
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
 
+    if limit > 1000:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Limit must be <= 1000")
+
     repo = UserRepository(db)
     if role:
-        users = repo.listByRole(role)
+        users = repo.listByRole(role, limit)
     else:
-        users = repo.listAllUsers()
+        users = repo.listAllUsers(limit)
     return [
         UserRead(
             id=u.id,

@@ -2,19 +2,18 @@
 
 import asyncio
 import os
-from functools import partial
 
-import markdown
-from PySide6.QtCore import QSize, Qt, QTimer, Signal, Slot
-from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtCore import Qt, QTimer, Slot
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QDialog, QFileDialog,
-                               QFormLayout, QFrame, QGroupBox, QHBoxLayout,
+                               QFormLayout, QGroupBox, QHBoxLayout,
                                QInputDialog, QLabel, QLineEdit, QListWidget,
                                QListWidgetItem, QMessageBox, QPushButton,
                                QScrollArea, QSpinBox, QTabWidget, QTextEdit,
                                QVBoxLayout, QWidget)
 from qasync import asyncSlot
 from src.rest_client import AsyncApiClient
+
+BUTTONS_HEIGHT = 50
 
 
 class AdminPanelWidget(QWidget):
@@ -50,13 +49,16 @@ class AdminPanelWidget(QWidget):
 
         # --- Кнопка «Back» ---
         back_btn = QPushButton("Back")
-        back_btn.setFixedHeight(30)
+        back_btn.setFixedHeight(BUTTONS_HEIGHT)
+        back_btn.setFixedWidth(300)
         back_btn.clicked.connect(self.on_back_clicked)
-        # Выравниваем влево
+
+        # Выравниваем по центру
         back_layout = QHBoxLayout()
-        back_layout.addWidget(back_btn, alignment=Qt.AlignLeft)
-        # Добавляем небольшой отступ справа, чтобы кнопка не прилипала к краю
-        back_layout.addStretch(1)
+        back_layout.addStretch(1)  # Растяжка слева
+        back_layout.addWidget(back_btn)
+        back_layout.addStretch(1)  # Растяжка справа
+
         self.main_layout.addLayout(back_layout)
 
     @Slot()
@@ -111,6 +113,10 @@ class CategoriesTab(QWidget):
         btn_layout.addWidget(self.edit_btn)
         btn_layout.addWidget(self.delete_btn)
         layout.addLayout(btn_layout)
+
+        self.add_btn.setFixedHeight(BUTTONS_HEIGHT)
+        self.edit_btn.setFixedHeight(BUTTONS_HEIGHT)
+        self.delete_btn.setFixedHeight(BUTTONS_HEIGHT)
 
         # Connections
         self.add_btn.clicked.connect(self.on_add_category)
@@ -244,6 +250,9 @@ class CategoryDialog(QDialog):
         btn_layout.addWidget(self.cancel_btn)
         layout.addLayout(btn_layout)
 
+        self.ok_btn.setFixedHeight(BUTTONS_HEIGHT)
+        self.cancel_btn.setFixedHeight(BUTTONS_HEIGHT)
+
         self.ok_btn.clicked.connect(self.accept)
         self.cancel_btn.clicked.connect(self.reject)
 
@@ -299,6 +308,11 @@ class ArticlesTab(QWidget):
         self.media_btn = QPushButton("Управлять медиа")
         media_btn_layout.addWidget(self.media_btn)
         layout.addLayout(media_btn_layout)
+
+        self.edit_btn.setFixedHeight(BUTTONS_HEIGHT)
+        self.add_btn.setFixedHeight(BUTTONS_HEIGHT)
+        self.delete_btn.setFixedHeight(BUTTONS_HEIGHT)
+        self.media_btn.setFixedHeight(BUTTONS_HEIGHT)
 
         # Connections
         self.refresh_cats_btn.clicked.connect(self.on_refresh_categories)
@@ -475,6 +489,9 @@ class ArticleDialog(QDialog):
         btn_layout.addWidget(self.cancel_btn)
         layout.addLayout(btn_layout)
 
+        self.ok_btn.setFixedHeight(BUTTONS_HEIGHT)
+        self.cancel_btn.setFixedHeight(BUTTONS_HEIGHT)
+
         self.ok_btn.clicked.connect(self.accept)
         self.cancel_btn.clicked.connect(self.reject)
 
@@ -530,6 +547,9 @@ class MediaDialog(QDialog):
         btn_layout.addWidget(self.add_btn)
         btn_layout.addWidget(self.delete_btn)
         layout.addLayout(btn_layout)
+
+        self.add_btn.setFixedHeight(BUTTONS_HEIGHT)
+        self.delete_btn.setFixedHeight(BUTTONS_HEIGHT)
 
         self.add_btn.clicked.connect(self.on_add_media)
         self.delete_btn.clicked.connect(self.on_delete_media)
@@ -644,6 +664,10 @@ class TestsTab(QWidget):
         btn_layout.addWidget(self.edit_btn)
         btn_layout.addWidget(self.delete_btn)
         layout.addLayout(btn_layout)
+
+        self.add_btn.setFixedHeight(BUTTONS_HEIGHT)
+        self.edit_btn.setFixedHeight(BUTTONS_HEIGHT)
+        self.delete_btn.setFixedHeight(BUTTONS_HEIGHT)
 
         # Connections
         self.refresh_cats_btn.clicked.connect(self.on_refresh_categories)
@@ -845,6 +869,9 @@ class TestDialog(QDialog):
         btn_layout.addWidget(self.cancel_btn)
         main_layout.addLayout(btn_layout)
 
+        self.ok_btn.setFixedHeight(BUTTONS_HEIGHT)
+        self.cancel_btn.setFixedHeight(BUTTONS_HEIGHT)
+
         self.ok_btn.clicked.connect(self.accept)
         self.cancel_btn.clicked.connect(self.reject)
 
@@ -936,6 +963,8 @@ class QuestionWidget(QGroupBox):
         layout.addWidget(self.add_option_btn)
         self.add_option_btn.clicked.connect(self.on_add_option)
 
+        self.add_option_btn.setFixedHeight(BUTTONS_HEIGHT)
+
         # Храним OptionWidget-ы
         self.option_widgets = []
 
@@ -1022,6 +1051,9 @@ class UsersTab(QWidget):
         self.delete_btn = QPushButton("Удалить пользователя")
         layout.addWidget(self.delete_btn)
 
+        self.update_role_btn.setFixedHeight(BUTTONS_HEIGHT)
+        self.delete_btn.setFixedHeight(BUTTONS_HEIGHT)
+
         # Connections
         self.users_list.currentItemChanged.connect(self.on_user_selected)
         self.update_role_btn.clicked.connect(self.on_update_role)
@@ -1052,7 +1084,7 @@ class UsersTab(QWidget):
         """
         self.users_list.clear()
         try:
-            users = await self.client.list_users()
+            users = await self.client.list_users(limit=1000)
             self.users = users
             for u in users:
                 item = QListWidgetItem(f"{u['id']}: {u['username']} (Роль ID: {u['role_id']})")

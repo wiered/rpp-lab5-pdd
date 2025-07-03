@@ -483,8 +483,8 @@ class AsyncApiClient:
         return await self._request('GET', '/tests/export')
 
     # Users
-    async def list_users(self, role: Optional[str] = None) -> List[Dict[str, Any]]:
-        params = {}
+    async def list_users(self, role: Optional[str] = None, limit: int = 1000) -> List[Dict[str, Any]]:
+        params = {'limit': limit}
         if role:
             params['role'] = role
         return await self._request('GET', '/users', params=params)

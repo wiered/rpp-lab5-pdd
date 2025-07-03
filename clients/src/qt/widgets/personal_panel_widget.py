@@ -29,12 +29,6 @@ class PersonalPageWidget(QWidget):
         main_layout = QVBoxLayout()
         self.setLayout(main_layout)
 
-        # ===== Кнопка "Назад" =====
-        self.back_btn = QPushButton("Back")
-        self.back_btn.setFixedHeight(40)
-        self.back_btn.clicked.connect(self.on_back)
-        main_layout.addWidget(self.back_btn)
-
         # ===== Раздел 1: Прогресс (число решённых тестов из назначенных категорий) =====
         self.progress_group = QGroupBox("Прогресс пользователя")
         pg_layout = QVBoxLayout()

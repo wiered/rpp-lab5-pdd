@@ -14,6 +14,7 @@ done_svg_url = done_svg_path.replace("\\", "/")  # на Windows заменим �
 STYLESHEET = '''
 * {
     background-color: rgba(30, 30, 40, 1);
+    font-size: 16px;
 }
 
 QLineEdit {

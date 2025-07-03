@@ -57,18 +57,18 @@ class UserRepository:
             return False
 
     # --- Дополнительные CRUD-методы ---
-    def listAllUsers(self) -> List[User]:
+    def listAllUsers(self, limit) -> List[User]:
         """Возвращает список всех пользователей."""
-        statement = select(User).limit(1000)
+        statement = select(User).limit(limit)
         return self.session.exec(statement).all()
 
-    def listByRole(self, role_name: str) -> List[User]:
+    def listByRole(self, role_name: str, limit: int = 1000) -> List[User]:
         """Возвращает список пользователей определённой роли."""
         stmt_role = select(Role).where(Role.name == role_name)
         role = self.session.exec(stmt_role).first()
         if not role:
             return []
-        stmt = select(User).where(User.role_id == role.id).limit(1000)
+        stmt = select(User).where(User.role_id == role.id).limit(limit)
         return self.session.exec(stmt).all()
 
     def changePassword(self, user_id: int, new_hash: str) -> bool:

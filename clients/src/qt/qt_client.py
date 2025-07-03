@@ -59,7 +59,7 @@ class MainWindow(QMainWindow):
     @asyncSlot()
     async def on_personal(self):
         # Переключаемся на страницу PersonalPage
-        self.parent.stacked.setCurrentWidget(self.parent.personal_page)
+        self.stacked.setCurrentWidget(self.personal_page)
 
         # Запускаем асинхронную загрузку данных
         QTimer.singleShot(0, lambda: self.personal_page.load_data())
