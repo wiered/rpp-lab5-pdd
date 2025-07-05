@@ -77,11 +77,14 @@ QCheckBox::indicator:checked {
     image: url("file:///''' + done_svg_url + '''");
 }
 
+/* Scroll Bars */
 
 QAbstractScrollArea {
-        padding: 5px 6px 5px 0;
+        padding: 5px 6px 5px 5px;
         border-radius: 5px;
 }
+
+/* Vertical */
 
 QScrollBar::vertical {
     border: 0px solid rgba(50, 50, 70, 1);
@@ -119,6 +122,50 @@ QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
 }
 
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+/* Horizontal */
+
+QScrollBar::horizontal {
+    border: 0px solid rgba(50, 50, 70, 1);
+    background: rgba(30, 30, 40, 1);
+    height: 10px;
+    border-radius: 3px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #6464A0;
+    border-radius: 2px;
+    min-width: 0px;
+}
+
+QScrollBar::add-line:horizontal {
+    border: 0px solid grey;
+    background: rgba(50, 50, 70, 1);
+    width: 0px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    border: 0px solid grey;
+    background: rgba(50, 50, 70, 1);
+    width: 0px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::left-arrow:horizontal,
+QScrollBar::right-arrow:horizontal {
+    border: 0px solid grey;
+    width: 0px;
+    height: 0px;
+    background: rgba(50, 50, 70, 1);
+}
+
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal {
     background: none;
 }
 
