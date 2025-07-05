@@ -336,6 +336,9 @@ class AsyncApiClient:
     async def get_progress(self, progress_id: int) -> Dict[str, Any]:
         return await self._request('GET', f'/progress/{progress_id}')
 
+    async def list_progress_by_user(self, user_id: int) -> List[Dict[str, Any]]:
+        return await self._request('GET', f'/progress/user/{user_id}')
+
     async def create_progress(
         self,
         user_id: int,
