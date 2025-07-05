@@ -732,7 +732,7 @@ class TestsTab(QWidget):
             QMessageBox.information(self, "Категория", "Сначала выберите категорию")
             return
         dlg = TestDialog(self.categories, create=True, category_id=cat_id)
-        if dlg.exec() == dlg.Accepted:
+        if dlg.exec() == QDialog.Accepted:
             data = dlg.get_data()
             QTimer.singleShot(0, lambda: self._create_full_test(data))
 
@@ -744,19 +744,26 @@ class TestsTab(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Ошибка", f"Не удалось создать тест:\n{e}")
 
-    @Slot()
-    def on_edit_test(self):
+    @asyncSlot()
+    async def _load_test(self):
         sel_item = self.tests_list.currentItem()
+        import icecream
+        icecream.ic(sel_item.data(Qt.UserRole))
         if not sel_item:
             QMessageBox.information(self, "Выбор", "Выберите тест для редактирования")
             return
-        t = sel_item.data(Qt.UserRole)
+        test_data = sel_item.data(Qt.UserRole)
+        test_id = test_data["id"]
+        test = await self.client.get_test_full(test_id)
         # Для редактирования теста и вопросов/вариантов лучше заново загрузить полный тест
-        dlg = TestDialog(self.categories, edit_data=t)
-        if dlg.exec() == dlg.Accepted:
+        dlg = TestDialog(self.categories, edit_data=test)
+        if dlg.exec() == QDialog.Accepted:
             data = dlg.get_data()
-            test_id = t["id"]
             QTimer.singleShot(0, lambda: self._update_full_test(test_id, data))
+
+    @Slot()
+    def on_edit_test(self):
+        QTimer.singleShot(0, lambda: self._load_test())
 
     @asyncSlot(int, dict)
     async def _update_full_test(self, test_id: int, data: dict):
@@ -884,10 +891,6 @@ class TestDialog(QDialog):
                 self.cat_combo.setCurrentIndex(idx)
 
         if edit_data:
-            # Предполагается, что edit_data уже содержит только TestRead (без вопросов)
-            # Нужно загрузить полный тест, но здесь edit_data - только TestRead
-            # Поэтому при использовании edit_data нужно передать полный контент в аргумент
-            # лучше передавать TestReadWithQuestions в edit_data
             full = edit_data
             self.title_edit.setText(full["title"])
             idx = self.cat_combo.findData(full["category_id"])
@@ -1000,16 +1003,20 @@ class QuestionWidget(QGroupBox):
         return {"text": text, "weight": weight, "options": opts}
 
 
-class OptionWidget(QHBoxLayout):
+class OptionWidget(QWidget):
     """
     Виджет для одного варианта ответа: текст + флажок is_correct.
     """
     def __init__(self, edit=None):
         super().__init__()
+        layout = QHBoxLayout(self)
+
         self.text_edit = QLineEdit()
         self.is_correct_chk = QCheckBox("Правильный")
-        self.addWidget(self.text_edit)
-        self.addWidget(self.is_correct_chk)
+
+        layout.addWidget(self.text_edit)
+        layout.addWidget(self.is_correct_chk)
+
         if edit:
             self.text_edit.setText(edit["text"])
             self.is_correct_chk.setChecked(edit["is_correct"])
