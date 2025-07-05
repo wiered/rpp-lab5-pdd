@@ -1,15 +1,15 @@
 ﻿# проверим, что файл done.svg там есть
 import os
 
+from PySide6.QtCore import QUrl
+
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 media_dir = os.path.join(base_dir, "media")
 
-done_svg_path = os.path.join(media_dir, "done.svg")
+done_svg_path = os.path.join(media_dir, "done.svg").replace("\\", "/")
 if not os.path.exists(done_svg_path):
     # Если SVG-файла нет, можно сразу предупредить:
     print(f"Warning: не найден файл галочки: {done_svg_path}")
-# Приведём путь к Unix-формату, чтобы Qt корректно его понял:
-done_svg_url = done_svg_path.replace("\\", "/")  # на Windows заменим слэши
 
 STYLESHEET = '''
 * {
@@ -74,7 +74,7 @@ QCheckBox::indicator:checked {
     background-color: #6464A0;
     border-radius: 3px;
     border: 1px solid rgba(30, 30, 40, 1);
-    image: url("file:///''' + done_svg_url + '''");
+    image: url("'''+ done_svg_path +'''");
 }
 
 /* Scroll Bars */
