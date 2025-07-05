@@ -6,6 +6,8 @@ from qasync import asyncSlot
 
 from src.rest_client import AsyncApiClient
 
+from src.qt.styles import STYLESHEET
+
 
 class TestWidget(QWidget):
     """
@@ -87,15 +89,7 @@ class TestWidget(QWidget):
         # 1) Заголовок теста
         title_lbl = QLabel(f"Тест: {test_data['title']}")
         title_lbl.setAlignment(Qt.AlignCenter)
-        title_lbl.setStyleSheet("""
-            font-size: 18px;
-            font-weight: bold;
-            color: rgba(200, 200, 200, 1);
-            background-color: rgba(50, 50, 70, 1);
-            border-radius: 3px;
-            padding: 6px;
-            margin-bottom: 15px;
-        """)
+        title_lbl.setStyleSheet(STYLESHEET)
         self.vbox.addWidget(title_lbl)
 
         # 2) Вопросы и варианты
@@ -103,15 +97,7 @@ class TestWidget(QWidget):
             # Создаём QGroupBox для каждого вопроса
             qbox = QGroupBox(f"{idx}. {q['text']} (вес: {q['weight']})")
             # Здесь задаём фон и скругление, чтобы совпадало с полями категорий/медиа (#323246)
-            qbox.setStyleSheet("""
-                QGroupBox {
-                    background-color: #323246;
-                    border-radius: 3px;
-                    color: rgba(200, 200, 200, 1);
-                    margin: 5px 0px;
-                    padding: 8px;
-                }
-            """)
+            qbox.setStyleSheet(STYLESHEET)
             q_layout = QVBoxLayout(qbox)
             q_layout.setContentsMargins(8, 8, 8, 8)
             q_layout.setSpacing(6)
@@ -123,26 +109,7 @@ class TestWidget(QWidget):
             for opt in q["options"]:
                 rb = QRadioButton(opt["text"])
                 # Прозрачный фон у радиокнопки, чтобы через неё был виден фон QGroupBox
-                rb.setStyleSheet("""
-                    QRadioButton {
-    color: rgba(200, 200, 200, 1);
-    spacing: 5px;
-    background-color: rgba(50, 50, 70, 0);
-}
-
-QRadioButton::indicator {
-    width: 13px;
-    height: 13px;
-    border-radius: 6px;
-    border: 1px solid rgba(200, 200, 200, 0.8);
-    background-color: rgba(50, 50, 70, 0);
-}
-
-QRadioButton::indicator:checked {
-    background-color: #6464A0;
-    border: 1px solid rgba(200, 200, 200, 0.8);
-}
-                """)
+                rb.setStyleSheet(STYLESHEET)
                 rb.setProperty("option_id", opt["id"])
                 button_group.addButton(rb, opt["id"])
                 q_layout.addWidget(rb)

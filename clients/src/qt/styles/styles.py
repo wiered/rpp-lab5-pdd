@@ -55,33 +55,27 @@ QLabel {
     color: rgba(200, 200, 200, 1);
 }
 
-QCheckBox {
+/* QCheckBox */
+
+QCheckBox, QRadioButton {
     border: 0px solid;
     background-color: rgba(50, 50, 70, 0);
-    border-radius: 3px;
+    border-radius: 7px;
     color: rgba(200, 200, 200, 1);
 }
-QCheckBox::indicator {
-    width: 13px;
-    height: 13px;
+QCheckBox::indicator, QRadioButton::indicator {
+    width: 14px;
+    height: 14px;
+    border-radius: 7px;
+    border: 1px solid rgba(130, 130, 140, 1);
 }
-QCheckBox::indicator:unchecked {
+QCheckBox::indicator:unchecked, QRadioButton::indicator:unchecked {
     background-color: rgba(50, 50, 70, 0);
-    border-radius: 3px;
-    border: 1px solid rgba(30, 30, 40, 1);
+
 }
-QCheckBox::indicator:checked {
+QCheckBox::indicator:checked, QRadioButton::indicator:checked {
     background-color: #6464A0;
-    border-radius: 3px;
-    border: 1px solid rgba(30, 30, 40, 1);
     image: url("'''+ done_svg_path +'''");
-}
-
-/* Scroll Bars */
-
-QAbstractScrollArea {
-        padding: 5px 6px 5px 5px;
-        border-radius: 5px;
 }
 
 /* Vertical */
@@ -253,6 +247,8 @@ QGroupBox {
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 3px;
     margin-top: 10px;
+    color: rgba(200, 200, 200, 1);
+    padding: 8px;
 }
 
 QGroupBox::title {
@@ -260,26 +256,6 @@ QGroupBox::title {
     left: 10px;
     padding: 0 3px;
     color: rgba(200, 200, 200, 1);
-}
-
-/* QRadioButton */
-QRadioButton {
-    color: rgba(200, 200, 200, 1);
-    spacing: 5px;
-    background-color: rgba(50, 50, 70, 0);
-}
-
-QRadioButton::indicator {
-    width: 13px;
-    height: 13px;
-    border-radius: 6px;
-    border: 1px solid rgba(200, 200, 200, 0.8);
-    background-color: rgba(50, 50, 70, 0);
-}
-
-QRadioButton::indicator:checked {
-    background-color: #6464A0;
-    border: 1px solid rgba(200, 200, 200, 0.8);
 }
 
 '''
