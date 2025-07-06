@@ -220,11 +220,13 @@ class MainPageWidget(QWidget):
         await self._get_media(article_id)
 
         me = await self.client.me()
-        await self.client.create_progress(
-            user_id=me["id"],
-            article_id=article_id,
-            status="in_progress"
-        )
+        progress = await self.client.list_progress(user_id=me["id"], article_id=article_id)
+        if not progress:
+            await self.client.create_progress(
+                user_id=me["id"],
+                article_id=article_id,
+                status="in_progress"
+            )
 
     @asyncSlot()
     async def on_back(self):
