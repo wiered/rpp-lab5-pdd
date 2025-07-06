@@ -29,7 +29,6 @@ class MainPageWidget(QWidget):
         self.back_btn = QPushButton("Back")
         self.back_btn.setEnabled(False)
         self.back_btn.setFixedHeight(40)
-        left.addWidget(self.back_btn)
 
         self.list_widget = QListWidget()
         self.list_widget.setMinimumWidth(300)
@@ -89,6 +88,13 @@ class MainPageWidget(QWidget):
         self.back_btn.clicked.connect(self.on_back)
         self.list_widget.itemClicked.connect(self.on_item)
 
+    def _get_qlistwidget_item(self, title):
+        if len(title) > 35:
+            title = (title[:35] if title[35] == " " else title[:34]) + "..."
+        item = QListWidgetItem(title)
+
+        return item
+
     @asyncSlot()
     async def _get_html_content(self, article):
         if article["content_type"] == "markdown":
@@ -135,11 +141,15 @@ class MainPageWidget(QWidget):
         categories = [c for c in all_categories if c["id"] in categories_ids]
 
         if parent_id is not None:
+            item = QListWidgetItem("..")
+            item.setData(Qt.UserRole, {"type": "back", "id": 0})
+            self.list_widget.addItem(item)
+
             subs = [c for c in all_categories if c["parent_id"] == parent_id]
         else:
             subs = categories
         for c in subs:
-            item = QListWidgetItem(c["title"])
+            item = self._get_qlistwidget_item(c["title"])
             item.setData(Qt.UserRole, {"type": "category", "id": c["id"]})
             self.list_widget.addItem(item)
 
@@ -147,8 +157,11 @@ class MainPageWidget(QWidget):
     async def _get_articles(self, parent_id):
         if parent_id is not None:
             arts = await self.client.list_articles_by_category(parent_id)
+            if not arts:
+                return
+
             for art in arts:
-                item = QListWidgetItem(art["title"])
+                item = self._get_qlistwidget_item(art["title"])
                 item.setData(Qt.UserRole, {"type": "article", "id": art["id"]})
                 self.list_widget.addItem(item)
 
@@ -156,34 +169,31 @@ class MainPageWidget(QWidget):
     async def _get_tests(self, parent_id):
         try:
             tests = await self.client.list_tests_by_category(parent_id)
-                # tests — список объектов { "id": int, "category_id": int, "title": str, "max_attempts": int }
+            # tests — список объектов { "id": int, "category_id": int, "title": str, "max_attempts": int }
             for t in tests:
-                item = QListWidgetItem(f"Тест: {t['title']}")
+                item = self._get_qlistwidget_item(t["title"])
                 item.setData(Qt.UserRole, {"type": "test", "id": t["id"]})
-                    # (по желанию можно установить другой фон/иконку)
                 self.list_widget.addItem(item)
         except Exception as e:
-                # Если API отвалился — не фатально, просто не рисуем тесты
             print(f"Ошибка при загрузке тестов: {e}")
 
     @asyncSlot(object)
     async def on_item(self, item: QListWidgetItem):
-        data = item.data(Qt.UserRole)
-        kind = data.get("type")
+        data_item = item.data(Qt.UserRole)
+        kind = data_item.get("type")
         match kind:
             case "category":
                 self.history.append(self.current_id)
-                await self.load_categories(data["id"])
+                await self.load_categories(data_item["id"])
             case "article":
-                await self.load_article(data["id"])
+                await self.load_article(data_item["id"])
             case "test":
-                # Новый блок: обработка клика по тесту
-                test_id = data["id"]
+                test_id = data_item["id"]
                 self.parent.on_test(test_id)
-            case "test_ui":  # зарезервировано, если понадобится
-                pass
-            case "test_results":
-                pass
+            case "back":
+                if self.history:
+                    self.current_id = self.history.pop()
+                    await self.load_categories(self.current_id)
             case _:
                 QMessageBox.information(self, "Test", "Неизвестный элемент списка")
 
