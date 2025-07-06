@@ -7,32 +7,20 @@ from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMainWindow,
                                QPushButton, QStackedLayout, QVBoxLayout,
                                QWidget, QToolButton)
 from qasync import asyncSlot
+from PySide6.QtGui import QIcon
+from PySide6.QtCore import QSize
+
 from src.qt.widgets import (AdminPanelWidget, LoginPageWidget, MainPageWidget,
                             PersonalPageWidget, TestWidget)
 from src.rest_client import AsyncApiClient
 from src.qt.styles import STYLESHEET
-from PySide6.QtGui import QIcon
-from PySide6.QtCore import QSize
+from src.qt.styles.icons import svg_manager
 
 load_dotenv()
 
 SERVER_PORT = os.getenv('SERVER_PORT')
-
 API_BASE = f"http://127.0.0.1:{SERVER_PORT}/api"
 
-base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-qt_dir = os.path.join(base_dir, "qt")
-media_dir = os.path.join(qt_dir, "media")
-svgs_dir = os.path.join(media_dir, "svgs")
-
-maximize_svg_path = os.path.join(svgs_dir, "maximize.svg").replace("\\", "/")
-minimize_svg_path = os.path.join(svgs_dir, "minimize.svg").replace("\\", "/")
-collapse_svg_path = os.path.join(svgs_dir, "collapse.svg").replace("\\", "/")
-close_svg_path = os.path.join(svgs_dir, "close.svg").replace("\\", "/")
-
-for svg_path in (maximize_svg_path, minimize_svg_path, collapse_svg_path):
-    if not os.path.exists(svg_path):
-        print(f"SVG-файл не найден: {svg_path}")
 
 class CustomTitleBar(QWidget):
     def __init__(self, parent=None):
@@ -54,15 +42,15 @@ class CustomTitleBar(QWidget):
         layout.addStretch()
 
         self.min_btn = QToolButton()
-        self.min_btn.setIcon(QIcon(collapse_svg_path))
+        self.min_btn.setIcon(QIcon(svg_manager.get_icon("collapse.svg")))
         self.min_btn.setIconSize(QSize(16, 16))
 
         self.max_btn = QToolButton()
-        self.max_btn.setIcon(QIcon(maximize_svg_path))
+        self.max_btn.setIcon(QIcon(svg_manager.get_icon("maximize.svg")))
         self.max_btn.setIconSize(QSize(16, 16))
 
         self.close_btn = QToolButton()
-        self.close_btn.setIcon(QIcon(close_svg_path))
+        self.close_btn.setIcon(QIcon(svg_manager.get_icon("close.svg")))
         self.close_btn.setIconSize(QSize(16, 16))
 
         for btn in (self.min_btn, self.max_btn, self.close_btn):
@@ -288,11 +276,11 @@ class MainWindow(QMainWindow):
     def toggle_max_restore(self):
         if self.isMaximized():
             self.showNormal()
-            self.title_bar.max_btn.setIcon(QIcon(maximize_svg_path))
+            self.title_bar.max_btn.setIcon(QIcon(svg_manager.get_icon("maximize.svg")))
             self.central.setStyleSheet(STYLESHEET + self.ROUNDED_STYLE)
         else:
             self.showMaximized()
-            self.title_bar.max_btn.setIcon(QIcon(minimize_svg_path))
+            self.title_bar.max_btn.setIcon(QIcon(svg_manager.get_icon("minimize.svg")))
             self.central.setStyleSheet(STYLESHEET)
 
     # ===== МЕТОДЫ ОСНОВНОГО ОКНА =====
