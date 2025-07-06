@@ -5,10 +5,10 @@ from PySide6.QtCore import QUrl
 
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 media_dir = os.path.join(base_dir, "media")
+svgs_dir = os.path.join(media_dir, "svgs")
 
-done_svg_path = os.path.join(media_dir, "done.svg").replace("\\", "/")
+done_svg_path = os.path.join(svgs_dir, "done.svg").replace("\\", "/")
 if not os.path.exists(done_svg_path):
-    # Если SVG-файла нет, можно сразу предупредить:
     print(f"Warning: не найден файл галочки: {done_svg_path}")
 
 STYLESHEET = '''
