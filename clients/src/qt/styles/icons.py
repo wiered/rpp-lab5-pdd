@@ -26,7 +26,8 @@ icons_paths = [
     "maximize.svg",
     "minimize.svg",
     "collapse.svg",
-    "close.svg"
+    "close.svg",
+    "back.svg",
 ]
 
 svg_manager = SVGManager()

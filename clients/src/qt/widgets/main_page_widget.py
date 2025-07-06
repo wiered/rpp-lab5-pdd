@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (QHBoxLayout, QLabel, QListWidget,
 from qasync import asyncSlot
 
 from src.qt.styles import STYLESHEET
+from src.qt.styles.icons import svg_manager
 
 class MainPageWidget(QWidget):
     def __init__(self, parent = None, client = None):
@@ -141,7 +142,8 @@ class MainPageWidget(QWidget):
         categories = [c for c in all_categories if c["id"] in categories_ids]
 
         if parent_id is not None:
-            item = QListWidgetItem("⤴ Назад")
+            item = QListWidgetItem("Назад")
+            item.setIcon(QIcon(svg_manager.get_icon("back.svg")))
             item.setData(Qt.UserRole, {"type": "back", "id": 0})
             self.list_widget.addItem(item)
 
