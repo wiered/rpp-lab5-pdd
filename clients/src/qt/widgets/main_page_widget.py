@@ -141,7 +141,7 @@ class MainPageWidget(QWidget):
         categories = [c for c in all_categories if c["id"] in categories_ids]
 
         if parent_id is not None:
-            item = QListWidgetItem("..")
+            item = QListWidgetItem("⤴ Назад")
             item.setData(Qt.UserRole, {"type": "back", "id": 0})
             self.list_widget.addItem(item)
 
