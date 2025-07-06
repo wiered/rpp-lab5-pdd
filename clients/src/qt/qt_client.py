@@ -88,7 +88,10 @@ class CustomTitleBar(QWidget):
             QToolButton:hover {
                 background-color: rgb(140,40,50);
                 border: 0px;
-                border-radius: 3px;
+                border-top-right-radius: 3px;
+                border-top-left-radius: 0px;
+                border-bottom-left-radius: 0px;
+                border-bottom-right-radius: 0px;
             }
         """)
 
