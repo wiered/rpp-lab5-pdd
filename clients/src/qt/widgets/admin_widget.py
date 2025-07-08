@@ -747,8 +747,6 @@ class TestsTab(QWidget):
     @asyncSlot()
     async def _load_test(self):
         sel_item = self.tests_list.currentItem()
-        import icecream
-        icecream.ic(sel_item.data(Qt.UserRole))
         if not sel_item:
             QMessageBox.information(self, "Выбор", "Выберите тест для редактирования")
             return
