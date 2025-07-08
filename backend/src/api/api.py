@@ -3,10 +3,14 @@ __version__ = "0.1"
 __author__ = "Wiered"
 
 import os
+import logging
 
-from fastapi import FastAPI, Form, Request, status
+from fastapi import FastAPI, Request
 
-from src.database import DataBase, db
+logging.basicConfig(
+    format="%(levelname)s: %(asctime)s %(name)s %(message)s",
+    level=logging.INFO,
+)
 
 app = FastAPI()
 
